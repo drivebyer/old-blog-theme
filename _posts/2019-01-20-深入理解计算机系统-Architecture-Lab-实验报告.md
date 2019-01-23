@@ -130,11 +130,138 @@ long copy_block(long *src, long *dest, long len)
 
 ### sum.ys: Iteratively sum linked list elements
 
-写一个 Y86-64 程序 `sum.ys` 来计算链表所有元素的和。
+写一个 Y86-64 程序 `sum.ys` 来计算链表所有元素的和。下面是 3 组链表元素。
 
-这个程序应该先设置栈结构，调用函数，最后 Halt。
+```
+# Sample linked list
+        .align 8
+ele1:
+        .quad 0x00a
+        .quad ele2
+ele2:
+        .quad 0x0b0
+        .quad ele3
+ele3:
+        .quad 0xc00
+        .quad 0
+```
+
+这个程序应该先设置栈结构，调用函数，最后 Halt。对于这个问题的解法，可以参考书中的例子 Figure4.7。
+
+```
+# Execution begins at address 0
+        .pos 0
+        irmovq stack, %rsp # Set up stack pointer
+        call main          # Execute main program
+        halt               # Terminate program
+
+# Array of 4 elements
+        .align 8
+array:
+        .quad 0x000d000d000d
+        .quad 0x00c000c000c0
+        .quad 0x0b000b000b00
+        .quad 0xa000a000a000
+
+main:
+        irmovq array,%rdi
+        irmovq $4,%rsi
+        call sum # sum(array, 4)
+        ret
+
+# long sum(long *start, long count)
+# start in %rdi, count in %rsi
+sum:
+        irmovq $8,%r8      # Constant 8
+        irmovq $1,%r9      # Constant 1
+        xorq %rax,%rax     # sum = 0
+        andq %rsi,%rsi     # Set CC
+        jmp test           # Goto test
+loop:
+        mrmovq (%rdi),%r10 # Get *start
+        addq %r10,%rax     # Add to sum
+        addq %r8,%rdi      # start++
+        subq %r9,%rsi      # count--. Set CC
+test:
+        jne loop           # Stop when 0
+        ret # Return
+
+# Stack starts here and grows to lower addresses
+        .pos 0x200
+stack:
+```
+
+下面附上 `sum.ys` 对应的 C 代码和汇编代码。
+
+```c
+/* sum_list - Sum the elements of a linked list */
+typedef struct ELE {
+    long val;
+    struct ELE *next;
+} *list_ptr;
+long sum_list(list_ptr ls)
+{
+    long val = 0;
+    while (ls) {
+        val += ls->val;
+        ls = ls->next;
+    }
+    return val;
+}
+```
+
+```
+# Execution begins at address 0
+        .pos 0
+        irmovq stack, %rsp # Set up stack pointer
+        call main          # Execute main program
+        halt               # Terminate program
+
+# Sample linked list
+        .align 8
+ele1:
+        .quad 0x00a
+        .quad ele2
+ele2:
+        .quad 0x0b0
+        .quad ele3
+ele3:
+        .quad 0xc00
+        .quad 0
 
 
+main:
+        irmovq ele1, %rdi   # 用 %di 来传递参数
+        call sum_list
+        ret
 
+# long sum_list(list_ptr ls)
+# ls store in %rdi
+
+sum_list:
+        irmovq $0, %rax     # 将 %rax 初始化为 0，来存储元素和
+
+loop:  
+        andq %rdi, %rdi     # 设置 condition codes
+        je return           # conditional jump
+
+        mrmovq 0(%rdi), %rsi
+        addq %rsi, %rax     # 计算和
+
+        mrmovq 8(%rdi), %rsi
+        rrmovq %rsi, %rdi   # 将指针(下一个 struct 的地址)放进 %rdi
+
+        andq %rdi, %rdi
+        jne loop
+
+return:
+        ret
+
+        .pos 0x400          # TODO 这个值怎么确定？
+stack:
+
+```
+
+接下来用 YAS 和 YIS 进行汇编并模拟运行。
 
 

@@ -127,6 +127,9 @@ long copy_block(long *src, long *dest, long len)
 /* $end examples */
 
 ```
+123
+3123123
+123123
 
 使用 YAS 将相应的程序转换成二进制，然后再把生成的二进制放到指令集模拟器 YIS 上运行。
 

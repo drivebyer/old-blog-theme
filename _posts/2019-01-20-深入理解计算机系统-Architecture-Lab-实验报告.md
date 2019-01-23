@@ -74,7 +74,7 @@ ___
 
 这个部分在 sim/misc 这个文件夹里完成。你的任务就是写 3 个 Y86-64 程序并且模拟它。这 3 个程序要实现的功能在 sim/misc/examples.c 里面。
 
-```C
+```
 /* 
  * Architecture Lab: Part A
  * 
@@ -135,6 +135,7 @@ long copy_block(long *src, long *dest, long len)
 写一个 Y86-64 程序 `sum.ys` 来计算链表所有元素的和。
 
 这个程序应该先设置栈结构，调用函数，最后 Halt。
+
 
 
 

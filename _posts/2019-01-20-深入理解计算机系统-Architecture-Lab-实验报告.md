@@ -81,7 +81,6 @@ ___
  * High level specs for the functions that the students will rewrite
  * in Y86-64 assembly language
  */
-
 /* $begin examples */
 /* linked list element */
 typedef struct ELE {
@@ -111,7 +110,6 @@ long rsum_list(list_ptr ls)
         return val + rest;
     }
 }
-
 /* copy_block - Copy src to dest and return xor checksum of src */
 long copy_block(long *src, long *dest, long len)
 {
@@ -127,9 +125,6 @@ long copy_block(long *src, long *dest, long len)
 /* $end examples */
 
 ```
-123
-3123123
-123123
 
 使用 YAS 将相应的程序转换成二进制，然后再把生成的二进制放到指令集模拟器 YIS 上运行。
 

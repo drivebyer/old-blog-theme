@@ -74,7 +74,7 @@ ___
 
 这个部分在 sim/misc 这个文件夹里完成。你的任务就是写 3 个 Y86-64 程序并且模拟它。这 3 个程序要实现的功能在 sim/misc/examples.c 里面。
 
-```
+```c
 /* 
  * Architecture Lab: Part A
  * 

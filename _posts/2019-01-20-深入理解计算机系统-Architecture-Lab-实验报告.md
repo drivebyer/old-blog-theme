@@ -67,13 +67,75 @@ make: *** [all] Error 2
 ```
 
 执行 `yum install tk-devel.x86_64` 可解。
+
 ___
 
 ## 3 Part A
 
-这个部分在 sim/misc 这个文件夹里完成，这个文件夹里一共有 3 个要完成的程序。
+这个部分在 sim/misc 这个文件夹里完成。你的任务就是写 3 个 Y86-64 程序并且模拟它。这 3 个程序要实现的功能在 sim/misc/examples.c 里面。
 
-使用 YAS 将相应的程序转换成汇编代码，然后再把生成的汇编代码放到指令集模拟器 YIS 上运行。
+```C
+/* 
+ * Architecture Lab: Part A
+ * 
+ * High level specs for the functions that the students will rewrite
+ * in Y86-64 assembly language
+ */
+
+/* $begin examples */
+/* linked list element */
+typedef struct ELE {
+    long val;
+    struct ELE *next;
+} *list_ptr;
+
+/* sum_list - Sum the elements of a linked list */
+long sum_list(list_ptr ls)
+{
+    long val = 0;
+    while (ls) {
+        val += ls->val;
+        ls = ls->next;
+    }
+    return val;
+}
+
+/* rsum_list - Recursive version of sum_list */
+long rsum_list(list_ptr ls)
+{
+    if (!ls)
+        return 0;
+    else {
+        long val = ls->val;
+        long rest = rsum_list(ls->next);
+        return val + rest;
+    }
+}
+
+/* copy_block - Copy src to dest and return xor checksum of src */
+long copy_block(long *src, long *dest, long len)
+{
+    long result = 0;
+    while (len > 0) {
+        long val = *src++;
+        *dest++ = val;
+        result ^= val;
+        len--;
+    }
+    return result;
+}
+/* $end examples */
+
+```
+
+使用 YAS 将相应的程序转换成二进制，然后再把生成的二进制放到指令集模拟器 YIS 上运行。
 
 ### sum.ys: Iteratively sum linked list elements
+
+写一个 Y86-64 程序 `sum.ys` 来计算链表所有元素的和。
+
+这个程序应该先设置栈结构，调用函数，最后 Halt。
+
+
+
 

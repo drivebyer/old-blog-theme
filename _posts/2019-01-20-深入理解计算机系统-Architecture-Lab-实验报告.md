@@ -264,4 +264,6 @@ stack:
 
 接下来用 YAS 和 YIS 进行汇编并模拟运行。
 
+![](http://ww1.sinaimg.cn/large/c9caade4ly1fzhx11o3amj20ck04sq2v.jpg)
 
+可以看到 %rax 的值就是标号 ele1，ele2，ele3 处三个元素的和 0xcba，并且可以看到部分寄存器和部分内存地址的值也发生了改变（TODO 内存的值为什么会改变）。

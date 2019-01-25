@@ -75,42 +75,10 @@ ___
 这个部分在 sim/misc 这个文件夹里完成。你的任务就是写 3 个 Y86-64 程序并且模拟它。这 3 个程序要实现的功能在 sim/misc/examples.c 里面。
 
 ```c
-/* 
- * Architecture Lab: Part A
- * 
- * High level specs for the functions that the students will rewrite
- * in Y86-64 assembly language
- */
-/* $begin examples */
-/* linked list element */
 typedef struct ELE {
     long val;
     struct ELE *next;
 } *list_ptr;
-
-/* sum_list - Sum the elements of a linked list */
-long sum_list(list_ptr ls)
-{
-    long val = 0;
-    while (ls) {
-        val += ls->val;
-        ls = ls->next;
-    }
-    return val;
-}
-
-/* rsum_list - Recursive version of sum_list */
-long rsum_list(list_ptr ls)
-{
-    if (!ls)
-        return 0;
-    else {
-        long val = ls->val;
-        long rest = rsum_list(ls->next);
-        return val + rest;
-    }
-}
-/* copy_block - Copy src to dest and return xor checksum of src */
 long copy_block(long *src, long *dest, long len)
 {
     long result = 0;
@@ -122,13 +90,11 @@ long copy_block(long *src, long *dest, long len)
     }
     return result;
 }
-/* $end examples */
-
 ```
 
 使用 YAS 将相应的程序转换成二进制，然后再把生成的二进制放到指令集模拟器 YIS 上运行。
 
-### sum.ys: Iteratively sum linked list elements
+### sum.ys: 计算链表元素和
 
 写一个 Y86-64 程序 `sum.ys` 来计算链表所有元素的和。下面是 3 组链表元素。
 
@@ -148,53 +114,9 @@ ele3:
 
 这个程序应该先设置栈结构，调用函数，最后 Halt。对于这个问题的解法，可以参考书中的例子 Figure4.7。
 
-```
-# Execution begins at address 0
-        .pos 0
-        irmovq stack, %rsp # Set up stack pointer
-        call main          # Execute main program
-        halt               # Terminate program
-
-# Array of 4 elements
-        .align 8
-array:
-        .quad 0x000d000d000d
-        .quad 0x00c000c000c0
-        .quad 0x0b000b000b00
-        .quad 0xa000a000a000
-
-main:
-        irmovq array,%rdi
-        irmovq $4,%rsi
-        call sum # sum(array, 4)
-        ret
-
-# long sum(long *start, long count)
-# start in %rdi, count in %rsi
-sum:
-        irmovq $8,%r8      # Constant 8
-        irmovq $1,%r9      # Constant 1
-        xorq %rax,%rax     # sum = 0
-        andq %rsi,%rsi     # Set CC
-        jmp test           # Goto test
-loop:
-        mrmovq (%rdi),%r10 # Get *start
-        addq %r10,%rax     # Add to sum
-        addq %r8,%rdi      # start++
-        subq %r9,%rsi      # count--. Set CC
-test:
-        jne loop           # Stop when 0
-        ret # Return
-
-# Stack starts here and grows to lower addresses
-        .pos 0x200
-stack:
-```
-
-下面附上 `sum.ys` 对应的 C 代码和汇编代码。
+下面附上 sum.ys 对应的 C 代码和汇编代码。
 
 ```c
-/* sum_list - Sum the elements of a linked list */
 typedef struct ELE {
     long val;
     struct ELE *next;
@@ -213,10 +135,9 @@ long sum_list(list_ptr ls)
 ```
 # Execution begins at address 0
         .pos 0
-        irmovq stack, %rsp # Set up stack pointer
-        call main          # Execute main program
-        halt               # Terminate program
-
+        irmovq stack, %rsp # 设置 stack pointer
+        call main          
+        halt               
 # Sample linked list
         .align 8
 ele1:
@@ -228,42 +149,109 @@ ele2:
 ele3:
         .quad 0xc00
         .quad 0
-
-
 main:
-        irmovq ele1, %rdi   # 用 %di 来传递参数
+        irmovq ele1, %rdi    # 用 %di 来传递参数
         call sum_list
         ret
-
 # long sum_list(list_ptr ls)
 # ls store in %rdi
-
 sum_list:
-        irmovq $0, %rax     # 将 %rax 初始化为 0，来存储元素和
-
+        irmovq $0, %rax      # 将 %rax 初始化为 0，来存储元素和
 loop:  
-        andq %rdi, %rdi     # 设置 condition codes
-        je return           # conditional jump
-
+        andq %rdi, %rdi      # 设置 condition codes
+        je return            # conditional jump
         mrmovq 0(%rdi), %rsi
-        addq %rsi, %rax     # 计算和
-
-        mrmovq 8(%rdi), %rsi
-        rrmovq %rsi, %rdi   # 将指针(下一个 struct 的地址)放进 %rdi
-
+        addq %rsi, %rax      # 计算和
+        mrmovq 8(%rdi), %rdi # 将指针(下一个 struct 的地址)放进 %rdi
         andq %rdi, %rdi
         jne loop
-
 return:
         ret
-
-        .pos 0x400          # TODO 这个值怎么确定？
+        .pos 0x400           # TODO 这个值怎么确定？
 stack:
 
 ```
 
 接下来用 YAS 和 YIS 进行汇编并模拟运行。
 
-![](http://ww1.sinaimg.cn/large/c9caade4ly1fzhx11o3amj20ck04sq2v.jpg)
+![sum.yo模拟执行](http://ww1.sinaimg.cn/large/c9caade4ly1fzhyk4586xj20ck04ndfr.jpg)
 
 可以看到 %rax 的值就是标号 ele1，ele2，ele3 处三个元素的和 0xcba，并且可以看到部分寄存器和部分内存地址的值也发生了改变（TODO 内存的值为什么会改变）。
+
+### rsum.ys: 递归计算链表元素和
+
+写一个类似的 Y86-64 程序 rsum.ys 递归的计算链表的和，链表元素与上面一样。
+
+下面附上 rsum.ys 对应的 C 代码和汇编代码。
+
+```c
+typedef struct ELE {
+    long val;
+    struct ELE *next;
+} *list_ptr;
+long rsum_list(list_ptr ls)
+{
+    if (!ls)
+        return 0;
+    else {
+        long val = ls->val;
+        long rest = rsum_list(ls->next);
+        return val + rest;
+    }
+}
+```
+
+```
+# Execution begins at address 0
+        .pos 0
+        irmovq stack, %rsp # 设置 stack pointer
+        call main          
+        halt               
+# Sample linked list
+        .align 8
+ele1:
+        .quad 0x00a
+        .quad ele2
+ele2:
+        .quad 0x0b0
+        .quad ele3
+ele3:
+        .quad 0xc00
+        .quad 0
+main:
+        irmovq ele1, %rdi   # 用 %di 来传递参数
+        call rsum_list
+        ret
+# long rsum_list(list_ptr ls)
+# ls store in %rdi
+rsum_list:
+        pushq %r12           # 这个寄存器称为 callee-save registers
+                             # 在这个函数里将要使用到 %r12，所以将里面原有的值保存起来
+        irmovq $0, %rax      # 将 %rax 初始化为 0，来存储元素和
+        andq %rdi, %rdi      # 设置 condition codes
+        je return            # conditional jump
+        mrmovq 0(%rdi), %r12 # 将当前 struct 的 val 值放进寄存器
+        mrmovq 8(%rdi), %rdi # 加载下一个 struct 的地址到寄存器
+        call rsum_list       # 前一个函数还没弹栈，下一个函数接着压栈 (TODO 递归调用的栈帧是什么样的？)
+        addq %r12, %rax      # 计算和
+return:
+        popq %r12            # 函数调用结束时记得从栈中恢复这个寄存器原来的值
+        ret
+        .pos 0x400           # TODO 这个值怎么确定？
+stack:
+
+```
+
+接下来用 YAS 和 YIS 进行汇编并模拟运行。
+
+![rsum.yo模拟执行](http://ww1.sinaimg.cn/large/c9caade4ly1fzi2us3v3cj20cp07bq2y.jpg)
+
+通过分析该函数的汇编代码，可以很容易的弄清递归的调用方式。当 `rsum_list()` 函数每调用一次，就将当前 struct 的 **val** 值通过 %r12 压入当下函数的栈帧中，并且将 **next** 指针值通过 %rdi 传递给下一个函数 `rsum_list()`。
+
+当到达最后一个 struct 时，执行 `je return` 开始弹栈。每次弹栈之前，就从栈中恢复一个之前压入栈中的 **val** 值到 %r12 中，然后执行 `ret` 回到上一次调用 `call rsum_list` 的后面 `addq %r12, %rax` 进行元素的加法累计运算，知道最后函数全部弹栈完成，%rax 中存储了最终的元素和。
+
+TODO 但是通过 [Y86 Simulator Seb](https://github.com/quietshu/y86) 来可视化执行上面的 `rsum.yo` 发现：函数第一次执行 Conditional Jump `je return` 就跳转到了 **return** 标号处，这与代码逻辑不相符。
+
+
+
+### copy.ys: 

@@ -246,9 +246,9 @@ stack:
 
 ![rsum.yo模拟执行](http://ww1.sinaimg.cn/large/c9caade4ly1fzi2us3v3cj20cp07bq2y.jpg)
 
-通过分析该函数的汇编代码，可以很容易的弄清递归的调用方式。当 `rsum_list()` 函数每调用一次，就将当前 struct 的 **val** 值通过 %r12 压入当下函数的栈帧中，并且将 **next** 指针值通过 %rdi 传递给下一个函数 `rsum_list()`。
+通过分析该函数的汇编代码，可以很容易的弄清递归的调用方式。`rsum_list()` 函数每调用一次，就将当前 struct 的 **val** 值通过 %r12 压入当下函数的栈帧中，并且将 **next** 指针值通过 %rdi 传递给下一个函数 `rsum_list()`。
 
-当到达最后一个 struct 时，执行 `je return` 开始弹栈。每次弹栈之前，就从栈中恢复一个之前压入栈中的 **val** 值到 %r12 中，然后执行 `ret` 回到上一次调用 `call rsum_list` 的后面 `addq %r12, %rax` 进行元素的加法累计运算，知道最后函数全部弹栈完成，%rax 中存储了最终的元素和。
+当到达最后一个 struct 时，执行 `je return` 开始弹栈。每次弹栈之前，就从栈中恢复一个之前压入栈中的 **val** 值到 %r12 中，然后执行 `ret` 回到上一次调用 `call rsum_list` 的后面 `addq %r12, %rax` 进行元素的加法累计运算，直到最后函数全部弹栈完成，%rax 中存储了最终的元素和。
 
 TODO 但是通过 [Y86 Simulator Seb](https://github.com/quietshu/y86) 来可视化执行上面的 `rsum.yo` 发现：函数第一次执行 Conditional Jump `je return` 就跳转到了 **return** 标号处，这与代码逻辑不相符。
 

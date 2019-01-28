@@ -74,24 +74,6 @@ ___
 
 这个部分在 sim/misc 这个文件夹里完成。你的任务就是写 3 个 Y86-64 程序并且模拟它。这 3 个程序要实现的功能在 sim/misc/examples.c 里面。
 
-```c
-typedef struct ELE {
-    long val;
-    struct ELE *next;
-} *list_ptr;
-long copy_block(long *src, long *dest, long len)
-{
-    long result = 0;
-    while (len > 0) {
-        long val = *src++;
-        *dest++ = val;
-        result ^= val;
-        len--;
-    }
-    return result;
-}
-```
-
 使用 YAS 将相应的程序转换成二进制，然后再把生成的二进制放到指令集模拟器 YIS 上运行。
 
 ### sum.ys: 计算链表元素和
@@ -252,6 +234,114 @@ stack:
 
 TODO 但是通过 [Y86 Simulator Seb](https://github.com/quietshu/y86) 来可视化执行上面的 `rsum.yo` 发现：函数第一次执行 Conditional Jump `je return` 就跳转到了 **return** 标号处，这与代码逻辑不相符。
 
+### copy.ys: 拷贝函数
 
+将内存中的一块数据拷贝到另一个不重叠的内存位置，并计算被拷贝数据的 **checksum(Xor)**。C 语言代码如下：
 
-### copy.ys: 
+```c
+typedef struct ELE {
+    long val;
+    struct ELE *next;
+} *list_ptr;
+long copy_block(long *src, long *dest, long len)
+{
+    long result = 0;
+    while (len > 0) {
+        long val = *src++;
+        *dest++ = val;
+        result ^= val;
+        len--;   
+    }
+    return result;
+}
+```
+
+下面是汇编代码：
+
+```
+# Execution begins at address 0
+        .pos 0
+        irmovq stack, %rsp
+        call main
+        halt
+.align 8
+# Source block
+src:
+        .quad 0x00a
+        .quad 0x0b0
+        .quad 0xc00
+# Destination block
+dest:
+        .quad 0x111
+        .quad 0x222
+        .quad 0x333
+# main method
+main:
+        irmovq src, %rdi
+        irmovq dest, %rsi
+        irmovq $3, %rdx      # 调用函数之前准备好参数
+        call copy_block
+        ret
+# long copy_block(long* src, long* dest, long len)
+copy_block:
+        pushq %r12           # 临时存放 val 值
+        irmovq $0, %rax      # result = 0，TODO %rax 中的值不需要保存吗？
+        jmp loop_test
+loop:  
+        mrmovq 0(%rdi), %r12 # long val = *src
+        addq $8, %rdi        # src++  
+        rmmovq %r12, (%rsi)  # *dest = val
+        addq $8, %rsi        # dest++，这样 dest 中就存放了下一个 struct 的地址
+        xorq %r12, %rax      # result ^= val
+        subq $1, %rdx        # len--
+        jmp 
+loop_test:
+        andq %rdx, %rdx      # len > 0？
+        jg loop
+        popq %r12
+        ret
+        .pos 0x300
+stack:
+
+```
+
+将代码上传至服务器，执行 `./yas copy.ys` 出现下面的问题：
+
+![不能直接对立即数计算](http://ww1.sinaimg.cn/large/c9caade4ly1fzm8q9j7gbj20jw03v74b.jpg)
+
+看样子是因为 Y86-64 里不支持立即数的运算，这个知识点应该在第三章讲过，一段时间没碰汇编给忘了。
+
+为了解决这个问题，再次使用两个 callee-register 来保存 1 和 8 这两个数，函数部分修改后如下：
+
+```
+copy_block:
+        pushq %r12           # 临时存放 val 值
+        pushq %r13           #
+        pushq %r14           #
+        irmovq $0, %rax      # result = 0，TODO %rax 中的值不需要保存吗？
+        irmovq $1, %r13      #
+        irmovq $8, %r14      #
+        jmp loop_test
+loop:  
+        mrmovq 0(%rdi), %r12 # long val = *src
+        addq %r14, %rdi        # src++  
+        rmmovq %r12, (%rsi)  # *dest = val
+        addq %r14, %rsi        # dest++，这样 dest 中就存放了下一个 struct 的地址
+        xorq %r12, %rax      # result ^= val
+        subq %r13, %rdx        # len--
+loop_test:
+        andq %rdx, %rdx      # len > 0？
+        jg loop
+        popq %r14            # TODO 与 push 时顺序相反
+        popq %r13
+        popq %r12
+        ret
+```
+
+编译并模拟运行如下：
+
+![Pop顺序正确](http://ww1.sinaimg.cn/large/c9caade4ly1fzm9kv3qz7j20cp06emx5.jpg)
+
+TODO 如果将 popq 逆序，得到的结果如下
+
+![Pop顺序错误](http://ww1.sinaimg.cn/large/c9caade4ly1fzm9mpbcbkj20cl06taa2.jpg)

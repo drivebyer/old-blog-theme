@@ -480,18 +480,22 @@ word ifun = [
     1: imem_ifun;       # Default: get from instruction memory
 ];
 
+# 取指阶段 -> 将 IIADDQ 指令添加进有效指令集
 bool instr_valid = icode in 
     { INOP, IHALT, IRRMOVQ, IIRMOVQ, IRMMOVQ, IMRMOVQ,
-           IOPQ, IJXX, ICALL, IRET, IPUSHQ, IPOPQ };
+           IOPQ, IJXX, ICALL, IRET, IPUSHQ, IPOPQ, IIADDQ };
 
+# 取指阶段 -> IIADDQ 需要 regid byte
+# TODO what is regid byte ？
 # Does fetched instruction require a regid byte?
 bool need_regids =
     icode in { IRRMOVQ, IOPQ, IPUSHQ, IPOPQ, 
-             IIRMOVQ, IRMMOVQ, IMRMOVQ };
+             IIRMOVQ, IRMMOVQ, IMRMOVQ, IIADDQ };
 
+# 取指阶段 -> IIADDQ 需要 constant word
 # Does fetched instruction require a constant word?
 bool need_valC =
-    icode in { IIRMOVQ, IRMMOVQ, IMRMOVQ, IJXX, ICALL };
+    icode in { IIRMOVQ, IRMMOVQ, IMRMOVQ, IJXX, ICALL, IIADDQ };
 
 ################ Decode Stage ###################################
 
@@ -504,7 +508,7 @@ word srcA = [
 
 ## What register should be used as the B source?
 word srcB = [
-    icode in { IOPQ, IRMMOVQ, IMRMOVQ  } : rB;
+    icode in { IOPQ, IRMMOVQ, IMRMOVQ, IIADDQ } : rB;
     icode in { IPUSHQ, IPOPQ, ICALL, IRET } : RRSP;
     1 : RNONE;  # Don't need register
 ];
@@ -512,7 +516,7 @@ word srcB = [
 ## What register should be used as the E destination?
 word dstE = [
     icode in { IRRMOVQ } && Cnd : rB;
-    icode in { IIRMOVQ, IOPQ} : rB;
+    icode in { IIRMOVQ, IOPQ, IIADDQ } : rB;
     icode in { IPUSHQ, IPOPQ, ICALL, IRET } : RRSP;
     1 : RNONE;  # Don't write any register
 ];
@@ -528,7 +532,7 @@ word dstM = [
 ## Select input A to ALU
 word aluA = [
     icode in { IRRMOVQ, IOPQ } : valA;
-    icode in { IIRMOVQ, IRMMOVQ, IMRMOVQ } : valC;
+    icode in { IIRMOVQ, IRMMOVQ, IMRMOVQ, IIADDQ } : valC;
     icode in { ICALL, IPUSHQ } : -8;
     icode in { IRET, IPOPQ } : 8;
     # Other instructions don't need ALU
@@ -537,7 +541,7 @@ word aluA = [
 ## Select input B to ALU
 word aluB = [
     icode in { IRMMOVQ, IMRMOVQ, IOPQ, ICALL, 
-              IPUSHQ, IRET, IPOPQ } : valB;
+              IPUSHQ, IRET, IPOPQ, IIADDQ } : valB;
     icode in { IRRMOVQ, IIRMOVQ } : 0;
     # Other instructions don't need ALU
 ];
@@ -548,8 +552,9 @@ word alufun = [
     1 : ALUADD;
 ];
 
+# 因为涉及到算术运算，所以必须更新 CC
 ## Should the condition codes be updated?
-bool set_cc = icode in { IOPQ };
+bool set_cc = icode in { IOPQ, IIADDQ };
 
 ################ Memory Stage ###################################
 
@@ -601,4 +606,12 @@ word new_pc = [
 
 ``` 
 
+奇怪的是，在这个文件后面必须留一个空行，不然就会报错。
+
+然后在 **sim/seq** 目录下，执行 `./ssim -t ../y86-code/asumi.yo`，得到执行结果 **ISA Check Succeeds**。说明指令添加成功。
+
+最后有一个遗憾就是，没能以 GUI Mode 执行成功，网上找了半天资料也没一个有用的。等以后有空了再来慢慢研究。TODO
+
 ## 5 Part C
+
+TODO

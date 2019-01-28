@@ -342,6 +342,28 @@ loop_test:
 
 ![Pop顺序正确](http://ww1.sinaimg.cn/large/c9caade4ly1fzm9kv3qz7j20cp06emx5.jpg)
 
-TODO 如果将 popq 逆序，得到的结果如下
+如果将 popq 逆序，得到的结果如下。
 
 ![Pop顺序错误](http://ww1.sinaimg.cn/large/c9caade4ly1fzm9mpbcbkj20cl06taa2.jpg)
+
+TODO 这种操作是错误的，照理来说 %r14 和 %12 都应该发生变化，为什么只有 %r12 里的值变了？
+
+___
+
+## 4 Part B
+
+这部分在目录 **sim/seq** 里完成。
+
+Part B 的任务就是扩展 SEQ Processor，通过修改 seq-full.hcl 文件，使其支持 iaddq 指令。
+
+参照书中 Figure 4.18 中的 OPq 和 irmovq 指令描述。
+
+![Figure4.18](http://ww1.sinaimg.cn/large/c9caade4ly1fzmafgx13kj20il0cjmyb.jpg)
+
+得到 iaddq 指令的五阶段描述：
+
+| Stage | iaddq                     |
+| ----- |:-------------------------:|
+| Fetch | icode :ifun <- M1[PC]     |
+|       |                           |
+## 5 Part C

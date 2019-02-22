@@ -6,7 +6,7 @@ description: "深入理解计算机系统 Performance Lab 实验报告"
 keywords: "Performance Lab, 深入理解计算机系统, CSAPP"
 ---
 
-# 介绍
+# 1. 介绍
 
 这个实验的目的是优化内存紧凑的代码。在这个实验中，我们来看两个图像处理过程，分别对应本实验的两个部分：
 
@@ -22,9 +22,11 @@ unix> make driver
 unix> ./driver
 ```
 
-# 实验指导
+# 2. 实验指导
 
-## 数据结构
+下面是一些本实验的指导：
+
+## 2.1 数据结构
 
 ```c
 typedef struct {
@@ -34,15 +36,36 @@ typedef struct {
 } pixel;
 ```
 
+一个图片 I 是由一个一维的 **pixel** 结构数组来表示。第 (i, j) 个 **pixel** 等于 **I[RIDX(i,j,n)]**。
 
+其中 n 是图像矩阵的维数， RIDX 是定义在 `defs.h` 中的宏：
 
-# Part A：Rotate
+```c
+#define RIDX(i,j,n) ((i)*(n)+(j))
+```
+
+# 3. Part A：Rotate
 
 下面是文档中提供对 Rotate 的解题思路：
 
 ![思路](http://ww1.sinaimg.cn/large/c9caade4ly1g0fhbf9ecvj20le040t94.jpg)
 
 ![Picture1](http://ww1.sinaimg.cn/large/c9caade4ly1g0fhcw0syrj20gr0camxj.jpg)
+
+下面这个函数实现了 Rotate 的功能：
+
+```c
+void naive_rotate(int dim, pixel *src, pixel *dst) {
+    int i, j;
+    for(i=0; i < dim; i++)
+        for(j=0; j < dim; j++)
+            dst[RIDX(dim-1-j,i,dim)] = src[RIDX(i,j,dim)];
+    return;
+}
+```
+
+我们的实验目的就是使用 **code motion**、**loop unrolling** 和 **blocking** 等优化技巧，重写这个函数，使程序运行得更快。
+
 
 
 

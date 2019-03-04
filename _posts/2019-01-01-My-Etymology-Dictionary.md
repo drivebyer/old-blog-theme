@@ -10,4 +10,4 @@ keywords: "Markdown, Etymology, Dictionary, Computer, Program"
 
 [reentrant](https://zh.wikipedia.org/wiki/%E5%8F%AF%E9%87%8D%E5%85%A5)
 
-[consistency](https://www.etymonline.com/word/consistency?ref=etymonline_crossreference) : state of being in agreement or harmony with something -> steady adherence to principles, patterns of action, etc. -> harmonious connection, as of the parts of a system
+[consistency](https://www.etymonline.com/word/consistency?ref=etymonline_crossreference) : state of being in agreement or harmony with something **->** steady adherence to principles, patterns of action, etc. **->** harmonious connection, as of the parts of a system

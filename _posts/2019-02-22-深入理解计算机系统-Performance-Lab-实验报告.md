@@ -68,3 +68,4 @@ void naive_rotate(int dim, pixel *src, pixel *dst) {
 
 
 
+

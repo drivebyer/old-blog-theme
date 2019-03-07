@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Linux Programmer's Manual"
+title: "Linux Programmer's Manual 阅读记录"
 comments: true
 description: ""
 keywords: "Markdown, Linux, Manual, Computer, Program"

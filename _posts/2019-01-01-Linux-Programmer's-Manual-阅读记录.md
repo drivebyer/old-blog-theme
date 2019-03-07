@@ -10,4 +10,4 @@ keywords: "Markdown, Linux, Manual, Computer, Program"
 pid_t waitpid(pid_t pid, int *status, int options);
 ```
 
->All of these system calls are used to wait for state changes in a child of the calling process, and obtain information about the child whose state has changed. A state change is considered to be: the child terminated; the child was stopped by a signal; or the child was resumed by a signal.
+>All of these system calls are used to wait for **state changes** in a child of the calling process, and obtain information about the child whose state **has changed**. A state change is considered to be: the child **terminated**; the child was **stopped** by a signal; or the child was **resumed** by a signal.

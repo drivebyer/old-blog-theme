@@ -48,3 +48,8 @@ Marginnote 中的调色板长这个样子：
 
 ![疑问颜色标签](http://ww1.sinaimg.cn/large/c9caade4ly1g0vjopknc1j20h60h2dhe.jpg)
 
+## 未收录入导图文本标签
+
+阅读过程中，有可能会遇到一些想要标注的文本，但是其重要性还不至于将其收录入导图。这种情况，使用下面的颜色标注：
+
+![未收录入导图文本标签](http://ww1.sinaimg.cn/large/c9caade4ly1g0vn94aq20j20h60h2ta9.jpg)

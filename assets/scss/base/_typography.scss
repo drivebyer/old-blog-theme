@@ -91,7 +91,8 @@ code {
   background: none;
   border-radius: 0;
   border: none;
-  font-family: "SFMono-Regular","Menlo","Consolas","Inconsolata","monospace";
+  //font-family: "SFMono-Regular","Menlo","Consolas","Inconsolata","monospace";
+  font-family: "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   font-size: 1em;
   margin: 0;
   padding: 0 2px;
@@ -100,7 +101,8 @@ code {
 
 pre {
   -webkit-overflow-scrolling: touch;
-  font-family: "SFMono-Regular",Menlo,Consolas,"Inconsolata",monospace;
+  //font-family: "SFMono-Regular",Menlo,Consolas,"Inconsolata",monospace;
+  font-family: "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   font-size: 1em;
   margin: 0;
   padding: 5px 10px !important;

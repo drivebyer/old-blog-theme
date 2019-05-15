@@ -2,7 +2,7 @@
 title_left    : "Think"
 title_right   : "Cell" # default: ""
 description   : "Blog"
-keywords      : "blog, Java, code, life"
+keywords      : "blog, Java, coding, life"
 url           : https://drivebyer.github.io # site url
 baseurl       : "" # apply repo name like "/myproject" if used under gh-pages branch, else (under master branch) just leave empty/blank
 cover         : "" # image uri like logo/cover image for site seo

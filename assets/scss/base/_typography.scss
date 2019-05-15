@@ -79,7 +79,7 @@ blockquote {
   padding: $base-spacing 0 $base-spacing $base-spacing;
   margin: $base-spacing 0;
   color: $dark-gray-color;
-  line-height: 1.2;
+  line-height: 1.8;
   border-left: $small-spacing solid $light-gray-color;
   background-color: lighten($light-gray-color, 15%);
   p {
@@ -101,11 +101,11 @@ code {
 pre {
   -webkit-overflow-scrolling: touch;
   font-family: "SFMono-Regular",Menlo,Consolas,"Inconsolata",monospace;
-  font-size: 1.1em;
+  font-size: 1em;
   margin: 0;
   padding: 5px 10px !important;
   overflow: auto;
-  max-height: 70em;
+  max-height: 60em;
   white-space: pre;
   border: 1px solid $light-gray-color;
 

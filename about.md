@@ -4,4 +4,4 @@ title: About
 permalink: /about/
 ---
 
-contact me: wuyangmuc@163.com; wuyangmuc@gmail.com
+My name is Wu Yang, contact me: wuyangmuc@163.com; wuyangmuc@gmail.com

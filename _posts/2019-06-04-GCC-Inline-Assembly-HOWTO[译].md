@@ -443,7 +443,7 @@ __asm__ __volatile__(   "btsl %1,%0"
 将内存地址 ADDR 处的变量的 pos 位设为 1（btsl 与 btrl 作用相反）。约束 "Ir" 表明 pos 在寄存器中，范围在 0~31 之间。由于位运算会改变条件码寄存器，所以将 cc 放进 cloberred list。
 
 ```
-static inline char * strcpy(char * dest,const char *src)
+static inline char * strcpy(char * dest, const char *src)
 {
 int d0, d1, d2;
 __asm__ __volatile__(  "1:\tlodsb\n\t"
@@ -456,3 +456,59 @@ __asm__ __volatile__(  "1:\tlodsb\n\t"
 return dest;
 }
 ```
+
+前面讲的了，src 的约束为 "0"，表明它与第 0 号输入操作数有相同的约束，即 src 存放在 esi 寄存器。同理，dest 存放在 edi 寄存器。"&S", "&D", "&a" 表明寄存器 esi，edi，eax 是 early cloberred register，在函数完成之前，它们里面的内容会不断变化。
+
+```
+#define mov_blk(src, dest, numwords) \
+__asm__ __volatile__ (                                          \
+                       "cld\n\t"                                \
+                       "rep\n\t"                                \
+                       "movsl"                                  \
+                       :                                        \
+                       : "S" (src), "D" (dest), "c" (numwords)  \
+                       : "%ecx", "%esi", "%edi"                 \
+                       )
+```
+
+注意这里我们把内联汇编定义成了宏，这是 linux kernel 中经常用的技巧。
+
+```
+#define _syscall3(type,name,type1,arg1,type2,arg2,type3,arg3) \
+type name(type1 arg1,type2 arg2,type3 arg3) \
+{ \
+long __res; \
+__asm__ volatile (  "int $0x80" \
+                  : "=a" (__res) \
+                  : "0" (__NR_##name),"b" ((long)(arg1)),"c" ((long)(arg2)), \
+                    "d" ((long)(arg3))); \
+__syscall_return(type,__res); \
+}
+```
+
+在 linux 中，有些系统调用用内联汇编实现，查看 linux/unistd.h 可以看到，所有的系统调用都被定义成了宏，如上。系统调用号存放在 eax 中，参数分别存放在 ebx，ecx 和 edx 中，一切准备就绪后，执行 int 0x80 启动系统调用，最后的返回值存放在 eax 中。所有的系统调用的实现都类似， exit() 是有一个形参的系统调用：
+
+```
+{
+    asm("movl $1,%%eax;     /* SYS_exit is 1 */
+         xorl %%ebx,%%ebx;  /* Argument is in ebx, it is 0 */
+         int  $0x80"        /* Enter kernel mode */
+         );
+}
+```
+
+exit() 是第 1 号系统调用，参数为 0。
+
+&nbsp;
+
+### 八、总结
+
+___
+
+本片文章主要讲解 GCC 内联汇编，了解基本概念后就可以自己摸索了。
+
+GCC 内联是一个很强大的功能，本文也只是介绍了点基本概念。想要更权威的讲解，可以参考：
+
+[6.47 How to Use Inline Assembly Language in C Code](https://gcc.gnu.org/onlinedocs/gcc/Using-Assembly-Language-with-C.html#Using-Assembly-Language-with-C)
+
+众所周知，linux 内核中大量的使用了内联汇编，想要更深入学习的也可以参考 linux 内核源码。

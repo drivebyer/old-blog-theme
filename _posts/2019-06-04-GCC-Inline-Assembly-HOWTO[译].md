@@ -236,7 +236,7 @@ asm ("leal (%0,%0,4), %0"
      );
 ```
 
-现在输入和输出操作数都使用了同一个寄存器，但是无法知道是哪个寄存器。通过下面这种方式可以指定寄存器：
+现在输入和输出操作数都使用了同一个寄存器（因为使用了 **"0"** 匹配约束），但是无法知道是哪个寄存器。通过下面这种方式可以指定寄存器：
 
 例6：
 
@@ -271,5 +271,188 @@ asm ("movl %0,%%eax;
 
 #### 5.4、Volatile
 
-如果你熟悉内核源码或者读过一些很精彩的代码，那么你一定见过很多函数声明带有关键字 **voaltile** 或者 **_voaltile_**。那什么是 **volatile** n呢?
+如果你熟悉内核源码或者读过一些很精彩的代码，那么你一定见过很多函数声明带有关键字 **voaltile** 或者 **_voaltile_**。那什么是 **volatile** 呢?
 
+如果你不想你写的汇编语句被优化（例如移动，删除等），那就在 **asm** 关键字后加上 **volatile** 关键字（小心使用）：
+
+```
+asm volatile(... : ... : ... : ...);
+```
+
+如果我们的汇编只是做一些计算，不会产生副作用，那么最好不要使用 **volatile** 关键字（这样 GCC 才能有效的优化代码）。
+
+&nbsp;
+
+### 六、约束
+
+___
+
+约束能够决定一个操作数在寄存器或者内存，在哪个寄存器或是哪块内存；决定操作数是一个立即数还是一个范围数，等等。
+
+#### 6.1、普通约束
+
+下面是一些常用的约束：
+
+#####6.1.1 寄存器操作数约束（"r"）
+
+当操作数使用这种约束的时候，它（操作数）会被存进通用寄存器（Gnenral Purpose Register, GPR），像这样：
+
+```
+asm ("movl %%eax, %0\n" :"=r"(myval));
+```
+
+变量 **myval** 被存进一个通用寄存器，再将 %eax 中的值拷贝进这个寄存器。**"r"** 约束表示变量 **myval** 可以存进任何一个通用寄存器。如果想指定一个通用寄存器，需要使用通用寄存器对应的符号：
+
+```
++---+--------------------+
+| r |    Random GPR      |
++---+--------------------+
+| a |   %eax, %ax, %al   |
+| b |   %ebx, %bx, %bl   |
+| c |   %ecx, %cx, %cl   |
+| d |   %edx, %dx, %dl   |
+| S |   %esi, %si        |
+| D |   %edi, %di        |
++---+--------------------+
+```
+
+#####6.1.2 内存操作数约束（"m"）
+
+当操作数在内存中，就会发生内存引用（as opposed to register constraints, which first store the value in a register to be modified and then write it back to the memory location）。一般来说，只有在必须使用寄存器约束或者能够快程序运行的地方，才会用到寄存器约束。
+
+当你不想用寄存器去保存一个需要改变的 C 变量时，使用内存约束是最好的办法。
+
+例8：
+
+```
+asm("sidt %0\n" 
+    : 
+    :"m"(loc)
+);
+```
+
+这条语句将 IDTR 寄存器的值，保存在内存位置 loc 处。
+
+#####6.1.3 匹配约束（"数字"）
+
+有时候，一个变量既要当做输入操作数又要当做输出操作数。这种情况下，在 asm 中使用匹配约束来指定。
+
+例9：
+
+```
+asm ("incl %0" 
+     :"=a"(var)
+     :"0"(var)
+);
+```
+
+这个知识点我们在例4、5、6中有提到过。这里使用匹配约束，寄存器 %eax 既用来保存输入操作数，也用来保存输出操作数。输入变量 var 被存进 %eax，在 %eax 中完成自增。**"0"** 在这里表示与第 0 号输入操作数有相同的约束（既 **"a"**）。这种约束可以用在：
+
+- 从一个变量读取输入，修改后结果存进同一个变量的情况
+- 输入操作数和输出操作数没必要分开的情况。
+
+匹配约束可以有效的利用寄存器。
+
+#####6.1.3 匹配约束（"数字"）
+
+其他一些有用的约束：
+
+- "m" : A memory operand is allowed, with any kind of address that the machine supports in general.
+- "o" : A memory operand is allowed, but only if the address is offsettable. ie, adding a small offset to the address gives a valid address.
+- "V" : A memory operand that is not offsettable. In other words, anything that would fit the 'm' constraint but not the 'o' constraint.
+- "i" : An immediate integer operand (one with constant value) is allowed. This includes symbolic constants whose values will be known only at assembly time.
+- "n" : An immediate integer operand with a known numeric value is allowed. Many systems cannot support assembly-time constants for operands less than a word wide. Constraints for these operands should use 'n' rather than 'i'.
+- "g" : Any register, memory or immediate integer operand is allowed, except for registers that are not general registers.
+Following constraints are x86 specific.
+
+- "r" : Register operand constraint, look table given above.
+- "q" : Registers a, b, c or d.
+- "I" : Constant in range 0 to 31 (for 32-bit shifts).
+- "J" : Constant in range 0 to 63 (for 64-bit shifts).
+- "K" : 0xff.
+- "L" : 0xffff.
+- "M" : 0, 1, 2, or 3 (shifts for lea instruction).
+- "N" : Constant in range 0 to 255 (for out instruction).
+- "f" : Floating point register
+- "t" : First (top of stack) floating point register
+- "u" : Second floating point register
+- "A" : Specifies the 'a' or 'd' registers. This is primarily useful for 64-bit integer values intended to be returned with the 'd' register holding the most significant bits and the 'a' register holding the least significant bits.
+
+#### 6.2、约束修饰符
+
+在使用约束的时候，为了更精确的表述，GCC 提供了一些修饰符：
+
+- "=": 被修饰的操作数是只写的。
+- "&": 被修饰的操作数之前被修改过。which is modified before the instruction is finished using the input operands. Therefore, this operand may not lie in a register that is used as an input operand or as part of any memory address. An input operand can be tied to an earlyclobber operand if its only use as an input occurs before the early result is written.
+
+&nbsp;
+
+### 七、实例
+
+___
+
+```
+int main(void)
+{
+    int foo = 10, bar = 15;
+    __asm__ __volatile__("addl  %%ebx,%%eax"
+                         :"=a"(foo)
+                         :"a"(foo), "b"(bar)
+                         );
+    printf("foo+bar=%d\n", foo);
+    return 0;
+}
+```
+
+这个例子里，我们让 GCC 把 foo 存在 eax 里，bar 存在 ebx 里，和存放在 eax 里。
+
+```
+ __asm__ __volatile__(
+                      "   lock       ;\n"
+                      "   addl %1,%0 ;\n"
+                      : "=m"  (my_var)
+                      : "ir"  (my_int), "m" (my_var)
+                      : /* no clobber-list */
+                      );
+```
+
+这是一个原子加法。移除 lock 指令，就能移除原子性。"=m" 表明 my_var 是一个输出操作数，在内存中（而不是寄存器中）。"ir" 说明 my_int 是一个整数，并且它应该保存在寄存器中。
+
+```
+ __asm__ __volatile__(  "decl %0; sete %1"
+                      : "=m" (my_var), "=q" (cond)
+                      : "m" (my_var) 
+                      : "memory"
+                      );
+```
+
+my_var 的值自减 1，如果减到 0，cond 设为 1。注意：
+
+- my_var 变量在内存中
+- cond 是 eax，ebx，ecx，edx 中的任一个
+- 内存可能被修改，所以 clobberred list 中为 "memory"
+
+```
+__asm__ __volatile__(   "btsl %1,%0"
+                      : "=m" (ADDR)
+                      : "Ir" (pos)
+                      : "cc"
+                      );
+```
+
+将内存地址 ADDR 处的变量的 pos 位设为 1（btsl 与 btrl 作用相反）。约束 "Ir" 表明 pos 在寄存器中，范围在 0~31 之间。由于位运算会改变条件码寄存器，所以将 cc 放进 cloberred list。
+
+```
+static inline char * strcpy(char * dest,const char *src)
+{
+int d0, d1, d2;
+__asm__ __volatile__(  "1:\tlodsb\n\t"
+                       "stosb\n\t"
+                       "testb %%al,%%al\n\t"
+                       "jne 1b"
+                     : "=&S" (d0), "=&D" (d1), "=&a" (d2)
+                     : "0" (src),"1" (dest) 
+                     : "memory");
+return dest;
+}
+```

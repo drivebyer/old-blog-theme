@@ -43,8 +43,3 @@ navbar:
     title: Blog
 
 exclude: ["gulp", "node_modules", "bower", "bower_components", "config.rb", "src", "Gemfile", "Gemfile.lock", ".rvmrc", ".rbenv-version", "package.json", "gulpfile.js", "README.md", "Rakefile", "changelog.md", "script"]
-
-comment_gitalk_clientId: dbb3adc98619a5a5f97b
-comment_gitalk_clientSecret: 734bd274ed16435e6b5de0e3137133193a11e5bb
-comment_gitalk_repo: drivebyer.github.io
-github_username: drivebyer

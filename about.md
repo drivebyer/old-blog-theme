@@ -4,4 +4,6 @@ title: About
 permalink: /about/
 ---
 
-My name is Wu Yang, contact me: wuyangmuc@163.com; wuyangmuc@gmail.com
+我是一名程序开发人员，对 C/Golang/Linux 感兴趣，目前在不断的学习中。
+
+wuyangmuc@163.com

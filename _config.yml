@@ -2,15 +2,15 @@
 title_left    : "Think"
 title_right   : "Cell" # default: ""
 description   : "Blog"
-keywords      : "blog, Java, coding, life"
-url           : https://drivebyer.github.io # site url
+keywords      : "blog, C, Golang, linux"
+url           : https://wuyang.me # site url
 baseurl       : "" # apply repo name like "/myproject" if used under gh-pages branch, else (under master branch) just leave empty/blank
 cover         : "" # image uri like logo/cover image for site seo
 
 google_analytics  : UA-XXXXX-XX
 twitter_username  : ""
-comments_enabled  : false # if enabled (set to true), please provide your disqus_username
-disqus_shortname  : ""
+comments_enabled  : true # if enabled (set to true), please provide your disqus_username
+disqus_shortname  : "wuyang"
 postshare_enabled : false
 
 # Build settings

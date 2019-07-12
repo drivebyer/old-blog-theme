@@ -39,5 +39,5 @@ map/reduce task 由 map/reduce funtion 来处理。这两种函数是由用户�
 
 为了处理 Worker Failure，Master 会周期性的 ping 各个 Worker。如果在一段时间内没有收到某个 Worker 的 pong，Master 就会将它标记为 failure。所有在这个 Worker 上完成的 map task 都会重新执行(因为无法获取一个宕机节点上的数据)。Master 会将这些 map task 重新调度给其他的 Worker(这个reschedule操作要通知到集群中所有正在执行reduce task的Worker)。已经完成的 reduce task 不用重新执行，因为 reduce task 的数据存放在 GFS。
 
-为了处理 Master Failure，Master 会周期性的将自己节点上的各种数据结构记录下来，一旦发生错误要么重启计算，要么从上一次记录的地方恢复。
+为了处理 Master Failure，Master 会周期性的将自己节点上的各种数据结构记录下来(checkpoint)，一旦发生错误要么重启计算，要么从上一次记录的地方恢复。
 

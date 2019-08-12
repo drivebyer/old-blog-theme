@@ -1,9 +1,11 @@
 ---
 layout: post
-title: "Go 语言汇编器的设计"
-comments: true
-description: "Go 语言汇编器的设计"
-keywords: "Assembler, Go"
+title: 'Go语言汇编器的设计'
+subtitle: 'Rob Pike在开发者大会上的演讲'
+date: 2019-07-22
+categories: 技术
+cover: ''
+tags: Golang
 ---
 
 这篇博文来自视频 [GopherCon 2016: Rob Pike - The Design of the Go Assembler](https://www.youtube.com/watch?v=KINIAgRpkDA) 里，Rob Pike 关于 Go 汇编器的讲述，记录部分我认为比较重要的文字。下面视频来自 youtube:

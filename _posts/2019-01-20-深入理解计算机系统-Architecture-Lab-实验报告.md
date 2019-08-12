@@ -1,11 +1,12 @@
 ---
 layout: post
-title: "深入理解计算机系统 Architecture Lab 实验报告"
-comments: true
-description: "深入理解计算机系统 Architecture Lab 实验报告"
-keywords: "Architecture Lab, 深入理解计算机系统, CSAPP"
+title: '深入理解计算机系统Architecture Lab实验报告'
+subtitle: ''
+date: 2019-01-20
+categories: 技术
+cover: ''
+tags: CSAPP
 ---
-
 ## 1 介绍
 
 通过这个实验，将会学习到流水线化的 Y86-64 处理器的设计和实现。通过优化，使程序的性能最大化。当你完成这个实验后，你会对代码和硬件间的交互对程序性能的影响有更敏锐的认识。

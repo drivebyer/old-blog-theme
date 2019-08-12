@@ -1,9 +1,11 @@
 ---
 layout: post
-title: "MapReduce论文阅读小结"
-comments: true
-description: "MapReduce论文阅读小结"
-keywords: "分布式, 论文"
+title: 'MapReduce论文阅读小结'
+subtitle: ''
+date: 2019-07-11
+categories: 技术
+cover: ''
+tags: 分布式
 ---
 
 MapReduce 是 Google 在 2005 年提出的一种编程模型，它能以集群的方式处理大量的数据。MapReduce 是由 Map 和 Reduce 两个过程组成，这也是其名字的由来。

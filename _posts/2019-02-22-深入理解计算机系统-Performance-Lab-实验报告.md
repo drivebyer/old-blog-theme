@@ -1,11 +1,12 @@
 ---
 layout: post
-title: "深入理解计算机系统 Performance Lab 实验报告"
-comments: true
-description: "深入理解计算机系统 Performance Lab 实验报告"
-keywords: "Performance Lab, 深入理解计算机系统, CSAPP"
+title: '深入理解计算机系统Performance Lab实验报告'
+subtitle: ''
+date: 2019-02-22
+categories: 技术
+cover: ''
+tags: CSAPP
 ---
-
 # 1. 介绍
 
 这个实验的目的是优化内存紧凑的代码。在这个实验中，我们来看两个图像处理过程，分别对应本实验的两个部分：

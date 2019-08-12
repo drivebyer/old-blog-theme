@@ -1,11 +1,12 @@
 ---
 layout: post
-title: "GCC Inline Assembly HOWTO[译]"
-comments: true
-description: "GCC Inline Assembly HOWTO[译]"
-keywords: "inline assembly, c"
+title: 'GCC Inline Assembly HOWTO[译]'
+subtitle: 'GCC下的内联汇编初探'
+date: 2019-06-18
+categories: 技术
+cover: ''
+tags: 汇编
 ---
-
 由于最近在完成 JOS 的 lab3，需要用到不少的内联汇编的知识，准备集中学习一下，将其中一篇讲得比较好的文章翻译下来，在译文的基础上删掉一些啰嗦的地方，也添加了一些自己的理解。
 
 原文链接：[GCC-Inline-Assembly-HOWTO](http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html)

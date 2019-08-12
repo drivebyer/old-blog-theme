@@ -38,7 +38,7 @@ nightMode: true
 # Comments 评论功能
 comments:
   disqus: true
-  disqus_url: 'https://liaokeyu.disqus.com/wuyang'
+  disqus_url: 'https://liaokeyu.disqus.com/driveby'
 
 # MathJax 公式支持 by Ray-Eldath
 mathjax: true

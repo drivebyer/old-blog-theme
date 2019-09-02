@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 'Channel的发送与接收流程'
-subtitle: '撞脸Kernel'
+title: 'Go Channel'
+subtitle: '发送与接收流程'
 date: 2019-08-30
 categories: 技术
 cover: ''
@@ -16,7 +16,7 @@ $ uname -a
 18.04.1-Ubuntu SMP x86_64 x86_64 x86_64 GNU/Linux
 ```
 
-#### 大致流程
+## 大致流程
 ___
 
 Go runtime包里的[chan.go](https://github.com/golang/go/blob/master/src/runtime/chan.go)实现里channel的大部分功能。其中`chansend()`和`chanrecv()`两个函数完成了channel的发送与接收功能。
@@ -70,7 +70,7 @@ goparkunlock(&c.lock, waitReasonChanSend, traceEvGoBlockSend, 3)
 ```
 以这种方式park一个g，在以后的某个时刻，可以通过hchan.sendq拿到g的指针，让其重新进入调度。
 
-#### 与Kernel设计再次"撞脸"
+## 与Kernel设计再次"撞脸"
 ___
 
 对channel的整个流程分析下来，发现其在发送时的优化与Kernel中System V 消息队列的发送优化类似：
@@ -87,7 +87,7 @@ if (!pipelined_send(msq, msg)) { /* 如果有进程在等待消息，直接给�
 ```
 详见[Kernel源码](https://elixir.bootlin.com/linux/v3.2.44/source/ipc/msg.c#L706)
 
-#### 未解疑惑
+## 未解疑惑
 ___
 
 最后还有一点关于创建channel的疑惑：

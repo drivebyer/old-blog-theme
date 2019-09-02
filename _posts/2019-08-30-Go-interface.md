@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 'Go interface'
-subtitle: ''
+title: 'Go Interface'
+subtitle: '未整理'
 date: 2019-08-30
 categories: 技术
 cover: ''
@@ -15,6 +15,7 @@ go version go1.12.7 linux/amd64
 $ uname -a
 18.04.1-Ubuntu SMP x86_64 x86_64 x86_64 GNU/Linux
 ```
+
 ```go
 package main
 
@@ -33,6 +34,10 @@ func (adder Adder) Add(a, b int32) int32 { return a + b }
 
 //go:noinline
 func (adder Adder) Sub(a, b int64) int64 { return a - b }
+
+//go:noinline
+//func (adder Adder) Test(a, b int64) int64 { return a - b }
+// 编译器会生成Test()的wrapper "".(*Adder).Test，但是不会在go.itab里面给它留位置
 
 func main() {
 	m := Mather(Adder{id: 6754, str: "test"})
@@ -65,16 +70,16 @@ func main() {
 	0x0059 00089 (main.go:20)	LEAQ	""..autotmp_1+32(SP), AX
 	0x005e 00094 (main.go:20)	MOVQ	AX, 8(SP)
 	0x0063 00099 (main.go:20)	CALL	runtime.convT2I(SB)
-	0x0068 00104 (main.go:20)	MOVQ	16(SP), AX
-	0x006d 00109 (main.go:20)	MOVQ	24(SP), CX
-	0x0072 00114 (main.go:26)	MOVQ	24(AX), AX
+	0x0068 00104 (main.go:20)	MOVQ	16(SP), AX               # iface.itab
+	0x006d 00109 (main.go:20)	MOVQ	24(SP), CX               # iface.data
+	0x0072 00114 (main.go:26)	MOVQ	24(AX), AX               # 这里决定了调用itab.fun[0]
 	0x0076 00118 (main.go:26)	MOVQ	CX, (SP)
 	0x007a 00122 (main.go:26)	MOVQ	$137438953482, CX
 	0x0084 00132 (main.go:26)	MOVQ	CX, 8(SP)
 	0x0089 00137 (main.go:26)	CALL	AX
 	0x008b 00139 (main.go:27)	MOVQ	56(SP), BP
 	0x0090 00144 (main.go:27)	ADDQ	$64, SP
-    0x0094 00148 (main.go:27)	RET
+  0x0094 00148 (main.go:27)	RET
 ```
 ```go
 func convT2I(tab *itab, elem unsafe.Pointer) (i iface) {

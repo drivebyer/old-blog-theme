@@ -112,3 +112,6 @@ default:
 }
 ```
 如果hchan.buf中包含指针，则不将两段内存（hchan与hchan.buf）连续分配，为什么？TODO
+
+参考资料：
+- [src/runtime/chan.go](https://golang.org/src/runtime/chan.go)

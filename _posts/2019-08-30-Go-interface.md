@@ -330,7 +330,12 @@ receiver 是 ptr, *Adder 也是 ptr, 满足调用要求。
 |    6754   |
 +-----------| <+ rsp
 ```
-综上所述，使用接口来调用方法，会经历两次方法调用步骤，第一次是创建iface后，调用系统自动生成到包装函数，第二次则是调用
+综上所述，使用接口来调用方法，会经历两次方法调用步骤，第一次是创建iface后，调用系统自动生成到包装函数，第二次则是调用。
+
+## Type assertion
+
+```go
+```
 
 参考资料：
 - [Interfaces and other types](https://golang.org/doc/effective_go.html#interfaces_and_types)

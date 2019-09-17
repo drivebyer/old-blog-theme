@@ -7,9 +7,10 @@ categories: 技术
 cover: ''
 tags: CSAPP
 ---
+
 ## 1 介绍
 
-通过这个实验，将会学习到流水线化的 Y86-64 处理器的设计和实现。通过优化，使程序的性能最大化。当你完成这个实验后，你会对代码和硬件间的交互对程序性能的影响有更敏锐的认识。
+通过这个实验，将会学习到流水线化的 Y86-64 处理器的设计和实现。通过优化，使程序的性能最大化
 
 这个实验分为 3 个 Part，每个部分单独提交。
 
@@ -115,7 +116,7 @@ long sum_list(list_ptr ls)
 }
 ```
 
-```
+```c
 # Execution begins at address 0
         .pos 0
         irmovq stack, %rsp # 设置 stack pointer
@@ -184,7 +185,7 @@ long rsum_list(list_ptr ls)
 }
 ```
 
-```
+```c
 # Execution begins at address 0
         .pos 0
         irmovq stack, %rsp # 设置 stack pointer
@@ -259,7 +260,7 @@ long copy_block(long *src, long *dest, long len)
 
 下面是汇编代码：
 
-```
+```c
 # Execution begins at address 0
         .pos 0
         irmovq stack, %rsp
@@ -314,7 +315,7 @@ stack:
 
 为了解决这个问题，再次使用两个 callee-register 来保存 1 和 8 这两个数，函数部分修改后如下：
 
-```
+```c
 copy_block:
         pushq %r12           # 临时存放 val 值
         pushq %r13           #
@@ -374,7 +375,7 @@ Part B 的任务就是扩展 SEQ Processor，通过修改 seq-full.hcl 文件，
 
 下面就根据指令的描述来修改 seq-full.hcl 文件。
 
-```
+```c
 #/* $begin seq-all-hcl */
 #######################################################################
 #  HCL Description of Control for Single Cycle Y86-64 Processor SEQ   #

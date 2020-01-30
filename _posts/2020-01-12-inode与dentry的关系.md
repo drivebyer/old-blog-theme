@@ -8,6 +8,8 @@ cover: ''
 tags: 读核笔记
 ---
 
+本文参考内核版本：2.4.0
+
 ![截屏2020-01-12下午7.38.11.png](http://ww1.sinaimg.cn/large/c9caade4gy1gau215rnu3j21h213iqao.jpg)
 
 参考资料：

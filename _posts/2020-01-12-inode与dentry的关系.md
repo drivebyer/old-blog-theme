@@ -5,7 +5,7 @@ subtitle: ''
 date: 2020-01-12
 categories: 技术
 cover: ''
-tags: 读核笔记, 文件系统
+tags: 读核笔记 文件系统
 ---
 
 本文参考内核版本：2.4.0
